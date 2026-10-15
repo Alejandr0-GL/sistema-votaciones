@@ -31,10 +31,50 @@ export const createVoter = async (req: Request, res: Response) => {
 };
 
 // GET /voters
-export const getVoters = async (_req: Request, res: Response) => {
+export const getVoters = async (req: Request, res: Response) => {
+  try {
+    // Extraer parámetros de la URL (?page=1&limit=10&search=juan)
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const search = (req.query.search as string) || '';
 
-  const voters = await prisma.voter.findMany();
-  return res.json(voters);
+    // Calcular desplazamiento (offset)
+    const skip = (page - 1) * limit;
+
+    // Construir filtro de búsqueda opcional por nombre o email
+    const where = search
+      ? {
+          OR: [
+            { name: { contains: search, mode: 'insensitive' as const } },
+            { email: { contains: search, mode: 'insensitive' as const } },
+          ],
+        }
+      : {};
+
+    // Consultar datos paginados y total de registros en paralelo
+    const [voters, total] = await Promise.all([
+      prisma.voter.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      prisma.voter.count({ where }),
+    ]);
+
+    // Retornar respuesta estructurada con metadata de paginación
+    return res.json({
+      data: voters,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({ error: 'Error al obtener los votantes.' });
+  }
 };
 
 // GET /voters/{id}

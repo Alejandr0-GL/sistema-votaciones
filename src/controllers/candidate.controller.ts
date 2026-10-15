@@ -27,10 +27,45 @@ export const createCandidate = async (req: Request, res: Response) => {
 };
 
 // GET /candidates
-export const getCandidates = async (_req: Request, res: Response) => {
+export const getCandidates = async (req: Request, res: Response) => {
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const search = (req.query.search as string) || '';
 
-  const candidates = await prisma.candidate.findMany();
-  return res.json(candidates);
+    const skip = (page - 1) * limit;
+
+    const where = search
+      ? {
+          OR: [
+            { name: { contains: search, mode: 'insensitive' as const } },
+            { party: { contains: search, mode: 'insensitive' as const } },
+          ],
+        }
+      : {};
+
+    const [candidates, total] = await Promise.all([
+      prisma.candidate.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      prisma.candidate.count({ where }),
+    ]);
+
+    return res.json({
+      data: candidates,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({ error: 'Error al obtener los candidatos.' });
+  }
 };
 
 // GET /candidates/{id}
