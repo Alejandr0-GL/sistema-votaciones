@@ -109,6 +109,9 @@ curl -X GET http://localhost:3000/votes/statistics \
   -u admin:admin123
 ```
 
+Screenshot de las estadisticas generadas donde se ve total de votos por candidato, porcentaje de votos por candidato y total de votantes que han votado:
+![Estadísticas de Votación](./docs/screenshots/statistics.png)
+
 ### Los demás Endpoints se pueden ver en 'Swagger' después de iniciar el servidor.
 
 
