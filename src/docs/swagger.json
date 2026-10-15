@@ -1,0 +1,692 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API Sistema de Votaciones",
+    "version": "1.0.0",
+    "description": "API RESTful para gestionar votantes, candidatos y votos."
+  },
+  "tags": [
+    {
+      "name": "Votantes",
+      "description": "Operaciones relacionadas con los votantes"
+    },
+    {
+      "name": "Candidatos",
+      "description": "Operaciones relacionadas con los candidatos"
+    },
+    {
+      "name": "Votos",
+      "description": "Registro y consulta de votos"
+    }
+  ],
+  "paths": {
+    "/voters": {
+      "post": {
+        "tags": [
+          "Votantes"
+        ],
+        "summary": "Registrar un nuevo votante",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVoter"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Votante creado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Voter"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Votantes"
+        ],
+        "summary": "Obtener todos los votantes",
+        "responses": {
+          "200": {
+            "description": "Lista de votantes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Voter"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/voters/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Votantes"
+        ],
+        "summary": "Obtener un votante por ID",
+        "responses": {
+          "200": {
+            "description": "Votante encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Voter"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/VoterNotFound"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Votantes"
+        ],
+        "summary": "Eliminar un votante",
+        "responses": {
+          "200": {
+            "description": "Votante eliminado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/VoterNotFound"
+          }
+        }
+      }
+    },
+    "/candidates": {
+      "post": {
+        "tags": [
+          "Candidatos"
+        ],
+        "summary": "Registrar un nuevo candidato",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCandidate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Candidato creado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Candidate"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Candidatos"
+        ],
+        "summary": "Obtener todos los candidatos",
+        "responses": {
+          "200": {
+            "description": "Lista de candidatos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Candidate"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/candidates/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Candidatos"
+        ],
+        "summary": "Obtener un candidato por ID",
+        "responses": {
+          "200": {
+            "description": "Candidato encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Candidate"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/CandidateNotFound"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Candidatos"
+        ],
+        "summary": "Eliminar un candidato",
+        "responses": {
+          "200": {
+            "description": "Candidato eliminado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/CandidateNotFound"
+          }
+        }
+      }
+    },
+    "/votes": {
+      "post": {
+        "tags": [
+          "Votos"
+        ],
+        "summary": "Emitir un voto",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVote"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Voto registrado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VoteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "description": "Votante o candidato no encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "voterNotFound": {
+                    "value": {
+                      "error": "Votante no encontrado"
+                    }
+                  },
+                  "candidateNotFound": {
+                    "value": {
+                      "error": "Candidato no encontrado"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Votos"
+        ],
+        "summary": "Obtener todos los votos",
+        "responses": {
+          "200": {
+            "description": "Lista de votos con información del votante y candidato",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VoteDetails"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/votes/statistics": {
+      "get": {
+        "tags": [
+          "Votos"
+        ],
+        "summary": "Obtener estadísticas de la votación",
+        "responses": {
+          "200": {
+            "description": "Estadísticas calculadas por candidato",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Statistics"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/StatisticsError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "Id": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "Identificador UUID del recurso",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "El nombre y el email son obligatorios"
+          }
+        },
+        "required": [
+          "error"
+        ]
+      },
+      "Message": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "CreateVoter": {
+        "type": "object",
+        "required": [
+          "name",
+          "email"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Ana Pérez"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "ana.perez@example.com"
+          }
+        }
+      },
+      "Voter": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CreateVoter"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "has_voted": {
+                "type": "boolean",
+                "example": false
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "id",
+              "has_voted",
+              "createdAt"
+            ]
+          }
+        ]
+      },
+      "CreateCandidate": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Carlos Gómez"
+          },
+          "party": {
+            "type": "string",
+            "nullable": true,
+            "example": "Partido Ejemplo"
+          }
+        }
+      },
+      "Candidate": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CreateCandidate"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "votes": {
+                "type": "integer",
+                "example": 0
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "id",
+              "votes",
+              "createdAt"
+            ]
+          }
+        ]
+      },
+      "CreateVote": {
+        "type": "object",
+        "required": [
+          "voter_id",
+          "candidate_id"
+        ],
+        "properties": {
+          "voter_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "b7f8b3f0-3d48-4f0c-8e7d-7a7e89c1d3d2"
+          },
+          "candidate_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "3c1c1b4b-7a08-4e65-8d0b-1c4e7e8d9f10"
+          }
+        }
+      },
+      "Vote": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "voter_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "candidate_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "voter_id",
+          "candidate_id",
+          "createdAt"
+        ]
+      },
+      "VoteResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Voto registrado exitosamente"
+          },
+          "vote": {
+            "$ref": "#/components/schemas/Vote"
+          }
+        },
+        "required": [
+          "message",
+          "vote"
+        ]
+      },
+      "VoteDetails": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Vote"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "voter": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                }
+              },
+              "candidate": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "party": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                }
+              }
+            },
+            "required": [
+              "voter",
+              "candidate"
+            ]
+          }
+        ]
+      },
+      "Statistics": {
+        "type": "object",
+        "properties": {
+          "total_voters_who_voted": {
+            "type": "integer",
+            "example": 25
+          },
+          "candidates_statistics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CandidateStatistics"
+            }
+          }
+        },
+        "required": [
+          "total_voters_who_voted",
+          "candidates_statistics"
+        ]
+      },
+      "CandidateStatistics": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "party": {
+            "type": "string",
+            "nullable": true
+          },
+          "total_votes": {
+            "type": "integer",
+            "example": 12
+          },
+          "percentage": {
+            "type": "number",
+            "format": "float",
+            "example": 48.0
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "party",
+          "total_votes",
+          "percentage"
+        ]
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Solicitud inválida",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "VoterNotFound": {
+        "description": "Votante no encontrado",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "error": "Votante no encontrado"
+            }
+          }
+        }
+      },
+      "CandidateNotFound": {
+        "description": "Candidato no encontrado",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "error": "Candidato no encontrado"
+            }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "Error interno del servidor",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "StatisticsError": {
+        "description": "No se pudieron obtener las estadísticas",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "error": "Error al obtener estadísticas"
+            }
+          }
+        }
+      }
+    }
+  }
+}
